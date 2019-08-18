@@ -104,7 +104,6 @@ public class ExtractorGUI extends JFrame {
       pack();
 
       setDefaultCloseOperation(EXIT_ON_CLOSE);
-      setVisible(true);
    }
 
    private void setLookAndFeel() {
