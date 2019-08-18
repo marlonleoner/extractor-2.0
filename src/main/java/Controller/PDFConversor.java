@@ -38,12 +38,15 @@ public class PDFConversor extends Thread {
    public int currentPage;
    
    public PDFConversor(File file, final List<Page> lPages) {
+      System.out.println(" > [Conversor] " + file);
+  
       try {
          pdf         = PDDocument.load(file);
          this.lPages = lPages;
          currentPage = 1;
          
-         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+         nu.pattern.OpenCV.loadShared();
+         //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
          System.out.println(" > [ConversorController] OpenCV Processor Loaded");
       }
       catch(Exception e) {
