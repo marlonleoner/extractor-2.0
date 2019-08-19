@@ -93,4 +93,8 @@ public class Page {
    public void clearRectangles() {
       this.lRectangles.clear();
    }
+
+   public int getNumbersOfRectangles() {
+      return lRectangles.size();
+   }
 }
