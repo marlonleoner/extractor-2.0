@@ -4,8 +4,8 @@ import Controller.CropFinder;
 import Controller.PDFConversor;
 import Controller.CropExtractor;
 import GUI.HomePanel;
+import GUI.PageItemList;
 import GUI.PagePanel;
-import GUI.ProgressDialog;
 import Model.Page;
 
 import java.io.File;
@@ -149,13 +149,13 @@ public class ExtractorGUI extends JFrame {
       panel.setMinimumSize(new Dimension(800, 600));
       panel.setVisible(false);
       
-      setPagesPanel();
+      setPagesListPanel();
       setPreviewPanel();
       setButtonsPanel();
       
-      panel.add(pagesPanel,   BorderLayout.WEST);
-      panel.add(scrollPane,   BorderLayout.CENTER);
-      panel.add(buttonsPanel, BorderLayout.EAST);
+      panel.add(pagesListScrollPane, BorderLayout.WEST);
+      panel.add(scrollPane,          BorderLayout.CENTER);
+      panel.add(buttonsPanel,        BorderLayout.EAST);
    }
    
    private void setHomePanel() {
@@ -163,8 +163,9 @@ public class ExtractorGUI extends JFrame {
       homePanel = new HomePanel(icon, actionListener -> showOpenPDFDialog());
    }
    
-   private void setPagesPanel() {     
-      pagesList = new JList<String>();
+   private void setPagesListPanel() {     
+      pagesList = new JList<Page>();
+      pagesList.setBackground(Color.LIGHT_GRAY);
       pagesList.addMouseListener(new java.awt.event.MouseAdapter() {
          @Override
          public void mouseClicked(MouseEvent event) {
@@ -172,13 +173,8 @@ public class ExtractorGUI extends JFrame {
          }
       });
 
-      JScrollPane listScrollPane = new JScrollPane(pagesList);
-      
-      pagesPanel = new JPanel(new BorderLayout());
-      pagesPanel.setBorder(BorderFactory.createTitledBorder("Páginas"));
-      pagesPanel.setPreferredSize(new Dimension(200, panel.getHeight()));
-      pagesPanel.setBackground(Color.WHITE);
-      pagesPanel.add(listScrollPane, BorderLayout.CENTER);
+      pagesListScrollPane = new JScrollPane(pagesList);
+      pagesListScrollPane.setPreferredSize(new Dimension(150, panel.getHeight()));
    }
    
    private void setPreviewPanel() {
@@ -448,24 +444,29 @@ public class ExtractorGUI extends JFrame {
    
    private void pagesListMouseClicked(MouseEvent event) {
       JList list = (JList) event.getSource();
-      // Double-click detected
-      if(event.getClickCount() == 2) {
-         findClippingsButton.setEnabled(true);
-         typeClippingsComboBox.setEnabled(false);
-         mergeSelectedClippingsButton.setEnabled(false);
-         loadImage(pagesList.getSelectedIndex());
-      }      
+      
+      int selectedIndex = list.getSelectedIndex();
+      
+      findClippingsButton.setEnabled(true);
+      typeClippingsComboBox.setEnabled(false);
+      mergeSelectedClippingsButton.setEnabled(false);
+      list.ensureIndexIsVisible(selectedIndex);
+      loadImage(selectedIndex);
+      if(page.getNumbersOfRectangles() == 0) {
+         findClippings();
+      }
    }
    
    // Methods
    public void attFilesList() {
-      DefaultListModel listModel = new DefaultListModel();
+      DefaultListModel<Page> listModel = new DefaultListModel<>();
 
       for(Page page : lPages) {
-         listModel.addElement(page.getFilename());
+         listModel.addElement(page);
       }
 
       pagesList.setModel(listModel);
+      pagesList.setCellRenderer(new PageItemList());
    }
 
    public void attRectanglePanelGUI(int sizeSelectedRect, int type) {
@@ -494,9 +495,9 @@ public class ExtractorGUI extends JFrame {
    
    private JPanel homePanel;
    
-   private JPanel    pagesPanel;
-   private JList     pagesList;
-   private PagePanel mPagePanel;
+   private JScrollPane pagesListScrollPane;
+   private JList       pagesList;
+   private PagePanel   mPagePanel;
    
    private CardLayout  cardLayout;
    private JPanel      wrapperPanel;
