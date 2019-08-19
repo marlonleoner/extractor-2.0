@@ -26,7 +26,7 @@ public class CropExtractor {
          Mat  image = page.getImage();
          System.out.print("\t > [OpenCVController] Page [" + (i + 1) + "] " + page.getFilename());
          
-         String folderPath = path + "\\page-" + (i + 1) + "\\";  
+         String folderPath = path + File.separator + "page-" + (i + 1) + File.separator;  
          verifyPath(folderPath);
 
          List<CropRectangle> lRectangles = sortList(page.getRectangles());
